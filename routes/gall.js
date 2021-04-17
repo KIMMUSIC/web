@@ -3,6 +3,15 @@ var router = express.Router();
 var mysql = require('mysql');
 var ejs = require('ejs');
 var fs = require('fs');
+var option = require('./option');
+
+var loginData = {
+    connectionLimit: option.storageConfig.connectionLimit,
+    host: option.storageConfig.host,
+    user: option.storageConfig.user,
+    database: option.storageConfig.database,
+    password: option.storageConfig.password
+}
 
 router.get('/', function(req, res)
 {
@@ -30,11 +39,11 @@ router.get('/', function(req, res)
 })
 
 var pool = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    user: 'root',
-    database: 'web',
-    password: 'rhleh3060'
+    connectionLimit: loginData.connectionLimit,
+    host: loginData.host,
+    user: loginData.user,
+    database: loginData.database,
+    password: loginData.password
     })
 
     function getConnection() {
