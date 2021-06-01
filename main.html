@@ -1,30 +1,145 @@
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
     <title>
         title
     </title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Nanum+Gothic">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 1em;
+            font-family: 'Nanum Gothic', dotum, sans-serif;
+            background: #fff;
+}
+        #sky{
+            background : #567ace;
+            text-align: center;
+            min-width : 1280px;
+        }
+        #sky span{
+            display: block;
+            font-weight: bold;
+            height: 30px;
+            line-height: 30px;
+            color: #fff;
+
+        }
+        #insert{
+            background: #567ace;
+            display:inline;
+            text-decoration: none;
+        }
+        #insert a{
+            text-decoration: none;
+            color:#fff
+        }
+
+        li{
+            display: inline-block;
+        }
+    </style>
     <body>
+        <div id="sky">
+            <span>게시판 만들기</span>
+        </div>
         <table>
             <thead>
                 <tr>
-                    <th>글제목</th>
-                    <th>글내용</th>
+                    <th>제목</th>
+                    <th>작성자</th>
                 </tr>
             </thead>
             <tbody>
                 <% data.forEach(function(item, index){ %>
                     <tr>
-                        <td><%= item.title %></td>
-                        <td><%= item.description.substring(0,5) + "..." %></td>
+                        <td><a href='/detail/<%= item.id %>'><%= item.title.substring(0,5) + "..." %></td></a>
+                        <td><%= item.user_id%></td>
                     </tr>
                     <% })%>
             </tbody>
         </table>
+        <div id="insert"><a href = "/insert">글쓰기</a></div>
+        <% if(usession.user){ %>
+            <div><%= usession.user.id %></div>
+            <% } else{ %>
+                <div>로그인을해주세요</div>
+                <% } %>
+        
+<div class="container">
+    <ul class="pager">
+    
+    
+    
+    <%
+    var curSet = pasing.curSet
+    var endPage = pasing.endPage
+    var startPage =pasing.startPage
+    var totalSet = pasing.totalSet
+    var totalPage = pasing.totalPage
+    var page_list_size = pasing.page_list_size
+    var page_size = pasing.page_size
+    var curPage = pasing.curPage
+    %>
+    
+    
+    <%
+    if(curSet > 1){
+    %>
+    
+    <li value=(startPage -1) class="previous">
+    <a href='/pasing/<%= ( startPage - 1) %>'>이전페이지</a>
+    </li>
+    
+    <%
+    }
+    %>
+    
+    
+    <%
+    for(var i = startPage; i <= endPage; i++){
+    if(i > totalPage){break;}
+    
+    if(i == curPage){
+    %>
+    <li value=<%= i %> class='paz' >
+    <a href='/pasing/<%= i %>'>
+    <%= i %>
+    </a>
+    </li>
+    
+    <%
+    }else{
+    %>
+    
+    <li value=<%= i %> class='active' >
+    <a href='/pasing/<%= i %>'>
+    <%= i %>
+    </a>
+    </li>
+    
+    
+    <%
+    }
+    %>
+    
+    <%
+    }
+    %>
+    
+    <%
+    if(curSet < totalSet){
+    %>
+    <li value=( endPage + 1) class="next">
+    <a href='/pasing/<%= ( endPage + 1) %>'>다음페이지</a>
+    </li>
+    <%
+    }
+    %>
+    
+    </ul>
+    </div>
+    
     </body>
 </head>
