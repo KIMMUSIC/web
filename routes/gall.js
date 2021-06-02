@@ -6,6 +6,7 @@ var fs = require('fs');
 var db = require('../lib/db');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+const { response } = require('express');
 var MySQLStore = require('express-mysql-session')(session);
 
 var dbp = mysql.createPool(db);
@@ -191,6 +192,27 @@ router.get('/login', function(req,res)
     </form>
     `;
     res.send(output);
+})
+
+router.get('/regist', function(req,res)
+{
+    res.render('regist.html');
+})
+
+router.post('/id_check', function(req,res)
+{
+    var id = req.body.id;
+    getConnection().query('select * from user where userid = ?', [id], function(err,data)
+    {
+        console.log(data);
+        if(data.length != 0)
+        {
+            res.send('존재');
+        }
+        else{
+            res.send('사용가능');
+        }
+    })
 })
 
 
