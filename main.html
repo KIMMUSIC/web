@@ -49,8 +49,15 @@
             <span>게시판 만들기</span>
         </div>
         <div id="ubanner">
-            <a href="/login">로그인</a>
-            <a href="/regist">회원가입</a>
+            <% if(usession.user){ %>
+                <a href="#"><%= usession.user.id %></a>
+                <a href="/logout">로그아웃</a>
+                <% } else{ %>
+                    <a href="/login">로그인</a>
+                    <a href="/regist">회원가입</a>
+                    <% } %>
+
+
         </div>
         <table>
             <thead>
@@ -63,17 +70,13 @@
                 <% data.forEach(function(item, index){ %>
                     <tr>
                         <td><a href='/detail/<%= item.id %>'><%= item.title.substring(0,5) + "..." %></td></a>
-                        <td><%= item.user_id%></td>
+                        <td><%= item.nickname%></td>
                     </tr>
                     <% })%>
             </tbody>
         </table>
         <div id="insert"><a href = "/insert">글쓰기</a></div>
-        <% if(usession.user){ %>
-            <div><%= usession.user.id %></div>
-            <% } else{ %>
-                <div>로그인을해주세요</div>
-                <% } %>
+
         
 <div class="container">
     <ul class="pager">

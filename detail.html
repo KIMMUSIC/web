@@ -2,8 +2,48 @@
 <html>
     <head>
     <title><%= data[0].title %></title>
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
     </head>
     <body>
         <p><%= data[0].description %></p>
+    <hr/>
+    <div id = "reppp">
+        <% data2.forEach(function(item, index){ %>
+<div ><%= item.description %></div>
+
+
+            <% })%>
+</div>
+
+    <form name = "reply" method = "POST">
+        <label for="rep">댓글 : </label>
+        <textarea name="reply_cm" id = "id" placeholder="reply"></textarea>
+        <input type="button" onclick="rep()" value="등록">
+    </form>
+
+    <script>
+
+        function rep(){
+            var pase = location.pathname.substr(8);
+            var repForm = document.reply;
+            var repcm = repForm.reply_cm.value;
+            var id = $('#id').val();
+            $.ajax({
+                url: '/reply/' + pase,
+                type: 'POST',
+                data : {id : id},
+                success: function(data)
+                {
+                    var pp = document.createElement("div");
+                    pp.innerHTML = id;
+
+                    console.log(pp);
+
+                    document.getElementById("reppp").appendChild(pp);
+                }
+            })
+
+        }
+    </script>
     </body>
 </html>

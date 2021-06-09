@@ -82,14 +82,14 @@ if (curPage < 0) {
     }
 
 
-    var qS2 = 'select * from gall order by id desc limit  ? ,?';
+    var qS2 = 'select * from gall left join user on gall.user_id = user.userid order by id desc limit  ? ,?';
     getConnection().query(qS2,[no,page_size], function(error, result)
     {
         if (error) {
             console.log("페이징 에러" + error);
             return
             }
-            console.log(usession);
+            console.log(result);
             res.render('main.html', {data : result,pasing : result2, usession : usession});
 
 
@@ -118,7 +118,7 @@ router.get('/insert', function(req, res)
 router.post('/insert', function(req, res)
 {
     var body = req.body;
-    getConnection().query('insert into gall(title, description) value (?,?)', [body.title, body.description], function()
+    getConnection().query('insert into gall(title, description,user_id) value (?,?,?)', [body.title, body.description,req.session.user.id], function()
     {
         res.redirect('/');
     })
@@ -127,10 +127,16 @@ router.post('/insert', function(req, res)
 
 router.get('/detail/:id', function(req, res)
 {
-    getConnection().query('select * from gall where id = ?', [req.params.id], function(error, result)
+    getConnection().query('select * from reply where gall_num = ?', [req.params.id], function(error, reply)
     {
-                res.render('detail.html', {data : result});
+        getConnection().query('select * from gall where id = ?', [req.params.id], function(error, result)
+        {
+            console.log(reply);
+                    res.render('detail.html', {data : result, data2:reply});
+        })
+
     })
+
 })
 
 router.post('/login', function(req,res)
@@ -150,9 +156,11 @@ router.post('/login', function(req,res)
                 res.redirect('login');
             }
             else{
+                console.log(result);
                 req.session.user = {
                     id : id,
                     pw:pw,
+                    nick:result[0].nickname,
                     authorized : true
 
                 };
@@ -199,6 +207,18 @@ router.get('/regist', function(req,res)
     res.render('regist.html');
 })
 
+router.post('/regist', function(req,res)
+{
+    var id = req.body.id;
+    var pw = req.body.pw;
+    var nick = req.body.nick;
+
+    getConnection().query('INSERT INTO USER VALUES (?,?,?)', [id,pw,nick], function(error,data)
+    {
+        res.redirect('/');
+    })
+})
+
 router.post('/id_check', function(req,res)
 {
     var id = req.body.id;
@@ -214,6 +234,23 @@ router.post('/id_check', function(req,res)
         }
     })
 })
+
+router.post('/reply/:id', function(req,res)
+{
+    var pase = req.params.id;
+    getConnection().query('INSERT INTO REPLY(gall_num,user_id,description) VALUE (?,?,?)', [pase, req.session.user.id,req.body.id], function(err,data)
+    {
+        if(err)
+        {
+            console.log(err);
+        }
+        else
+        {
+            res.send('success');
+        }
+    })
+})
+
 
 
     function getConnection() {
