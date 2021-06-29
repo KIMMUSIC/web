@@ -43,11 +43,40 @@
         #ubanner{
             text-align: right;
         }
+        #content{
+            width : 1450px;
+            margin:0 auto;
+        }
+        .gall_table{
+            border-bottom : 1px solid #29367c;
+        }
+        table{
+            border-collapse:collapse;
+            border-spacing: 0;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        thead{
+            display: table-header-group;
+        }
+
+        th{
+            height: 37px;
+            border-width: 2px 0 1px;
+            border-style: solid;
+            border-color: #29367c;
+            vertical-align: middle;
+            text-align: center;
+            color:#333;
+
+        }
     </style>
     <body>
         <div id="sky">
             <span>게시판 만들기</span>
         </div>
+        <div id="content">
         <div id="ubanner">
             <% if(usession.user){ %>
                 <a href="#"><%= usession.user.id %></a>
@@ -59,23 +88,56 @@
 
 
         </div>
-        <table>
+
+        <table class="gall_table">
             <thead>
                 <tr>
-                    <th>제목</th>
+                    <th width = "10%">제목</th>
                     <th>작성자</th>
+                    <th>작성일</th>
                 </tr>
             </thead>
             <tbody>
                 <% data.forEach(function(item, index){ %>
                     <tr>
-                        <td><a href='/detail/<%= item.id %>'><%= item.title.substring(0,5) + "..." %></td></a>
+                        <td><a href='/detail/<%= item.id %>'><%= item.title %>
+                        <% if(item.a != undefined){ %>
+                            [<%= item.c %>]
+                        <%} %>
+                        
+                        </td></a>
                         <td><%= item.nickname%></td>
+                        <%
+                        var date = new Date();
+ 
+                        var year = date.getYear();
+                        var month = date.getMonth()+1;
+                        var day = date.getDate();
+
+                        var year = year.toString();
+                        var year = year.substr(1);
+
+                        var comp = year + '/' + month + '/' + day;
+                        var tt;
+                        
+
+                        if(comp === item.day)
+                        {
+                            tt = item.time;
+                        }
+                        else{
+                            tt = item.day;
+                        }
+                        %>
+
+                        <td><%= tt %></td>
+
                     </tr>
                     <% })%>
             </tbody>
         </table>
         <div id="insert"><a href = "/insert">글쓰기</a></div>
+
 
         
 <div class="container">
@@ -151,6 +213,7 @@
     
     </ul>
     </div>
+</div>
     
     </body>
 </head>

@@ -82,14 +82,13 @@ if (curPage < 0) {
     }
 
 
-    var qS2 = 'select * from gall left join user on gall.user_id = user.userid order by id desc limit  ? ,?';
+    var qS2 = 'select title, description, id, user_id, a,c,userid,userpw,nickname,date_format(date_time,"%y/%c/%e")as day, date_format(date_time, "%H:%i")as time from (select * from gall left join (select a, count(*) as c from(select gall_num as a, description as b from reply UNION ALL select gall_read_num as a, read_description as b from reply_add)x group by a)t on gall.id =t.a)k left join user on k.user_id = user.userid order by id desc limit  ? ,?';
     getConnection().query(qS2,[no,page_size], function(error, result)
     {
         if (error) {
             console.log("페이징 에러" + error);
             return
             }
-            console.log(result);
             res.render('main.html', {data : result,pasing : result2, usession : usession});
 
 
@@ -127,12 +126,16 @@ router.post('/insert', function(req, res)
 
 router.get('/detail/:id', function(req, res)
 {
-    getConnection().query('select * from reply where gall_num = ?', [req.params.id], function(error, reply)
+    getConnection().query('select * from reply left join user on reply.user_id = user.userid where gall_num = ?', [req.params.id], function(error, reply)
     {
         getConnection().query('select * from gall where id = ?', [req.params.id], function(error, result)
         {
-            console.log(reply);
-                    res.render('detail.html', {data : result, data2:reply});
+            getConnection().query('select * from reply_add left join user on reply_add.read_user_id = user.userid  where gall_read_num = ? order by parent_num, reply_add_num',[req.params.id], function(error, repp)
+            {
+                var leng = repp.length
+                    res.render('detail.html', {data : result, data2:reply, data3 : repp, leng : leng});
+            })
+
         })
 
     })
@@ -246,7 +249,25 @@ router.post('/reply/:id', function(req,res)
         }
         else
         {
-            res.send('success');
+
+            res.send(data.insertId.toString());
+        }
+    })
+})
+
+router.post('/reply_add/:id', function(req,res)
+{
+    var pase = req.params.id;
+    getConnection().query('INSERT INTO reply_add(gall_read_num,read_user_id,read_description,parent_num) VALUE (?,?,?,?)', [pase, req.session.user.id,req.body.id,req.body.pnum], function(err,data)
+    {
+        if(err)
+        {
+            console.log(err);
+        }
+        else
+        {
+
+            res.send(data.insertId.toString());
         }
     })
 })

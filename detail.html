@@ -3,13 +3,29 @@
     <head>
     <title><%= data[0].title %></title>
     <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .reply_user{
+            float : left;
+        }
+        .re_de{
+            width : 100%;
+        }
+    </style>
     </head>
     <body>
         <p><%= data[0].description %></p>
     <hr/>
     <div id = "reppp">
         <% data2.forEach(function(item, index){ %>
-<div ><%= item.description %></div>
+            <div id = "p<%= item.reply_num %>">
+                <div class="reply_user"><%= item.nickname %></div>
+<div id = "<%= item.reply_num %>" onclick="rerep(this)" style="cursor : pointer; color : red "><%= item.description %></div>
+<% data3.forEach(function(it2, idx2){ %>
+    <%if(item.reply_num === it2.parent_num){%>
+        <div class="re_con"><div class="reply_user">ㄴ<%= it2.nickname %></div> <div class="re_de"><%= it2.read_description %></div></div>
+    <%}%>
+<%})%>
+</div>
 
 
             <% })%>
@@ -34,14 +50,66 @@
                 data : {id : id},
                 success: function(data)
                 {
+                    var pa = document.createElement("div");
                     var pp = document.createElement("div");
-                    pp.innerHTML = id;
 
-                    console.log(pp);
+                    var attrObj = {
+                        "id" : data,
+                        "class" : "repply",
+                        "onclick" : "rerep(this)",
+                        "style" : "cursor : pointer; color : red", 
+
+                    }
+                    $(pp).attr(attrObj);
+                    pp.innerHTML = id;
+                    pa.innerHTML = pp;
 
                     document.getElementById("reppp").appendChild(pp);
                 }
             })
+
+        }
+
+        function rerep(e){
+            $("#reply_add").remove();
+
+            var replyEditor = '<form id = "reply_add" name = "rerepp" method = "POST">'+
+        '<label for="rep">대댓글 : </label>' +
+        '<textarea name="rereply_cm" id = "pid" placeholder="reply"></textarea>'+
+        '<input type="button"  id = "reid" value="등록">'+
+    '</form>'
+                    
+
+            $(e).after(replyEditor);
+
+            $("#reid").click(function(){
+                rerep_f(e);
+            })
+
+        }
+
+        function rerep_f(e){
+
+           var pase = location.pathname.substr(8);
+            var id = $('#pid').val();
+
+            $.ajax({
+                url: '/reply_add/' + pase,
+                type: 'POST',
+                data : {id : id, pnum : e.id},
+                success: function(data)
+                {
+                    var pp = document.createElement("div");
+
+                        pp.innerHTML ="ㄴ"+ id;
+                        $(pp).attr("onclick", null);
+
+                        document.getElementById(""+e.id+"").parentNode.append(pp);
+                }
+            })
+
+            $("#reply_add").remove();
+
 
         }
     </script>
